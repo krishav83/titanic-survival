@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titanic Survival Prediction | Machine Learning Model</title>
+    <meta name="description" content="Predict survival chances on the Titanic based on passenger characteristics">
+    <style>
+        :root {
+            --primary-color: #2193b0;
+            --secondary-color: #6dd5ed;
+            --accent-color: #4CAF50;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --overlay-dark: rgba(0, 0, 0, 0.6);
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: var(--text-light);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--overlay-dark);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            backdrop-filter: blur(5px);
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            text-align: left;
+            padding-left: 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--border-radius);
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+
+        select option {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 0.5rem;
+        }
+
+        button:hover {
+            background-color: #3e8e41;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Titanic Survival Prediction</h1>
+            <p>Enter passenger details to predict survival probability</p>
+        </div>
+
+        <form action="/predict" method="POST" aria-labelledby="form-title">
+            <div class="form-group">
+                <label for="pclass">Passenger Class:</label>
+                <select id="pclass" name="pclass" required>
+                    <option value="" disabled selected>Select class</option>
+                    <option value="1">First Class</option>
+                    <option value="2">Second Class</option>
+                    <option value="3">Third Class</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="sex">Gender:</label>
+                <select id="sex" name="sex" required>
+                    <option value="" disabled selected>Select gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age (years):</label>
+                <input type="number" id="age" name="age" min="0" max="120" step="0.1" required placeholder="Enter age in years">
+            </div>
+
+            <div class="form-group">
+                <label for="sibsp">Siblings/Spouses Aboard:</label>
+                <input type="number" id="sibsp" name="sibsp" min="0" max="10" required placeholder="Number of siblings/spouses">
+            </div>
+
+            <div class="form-group">
+                <label for="parch">Parents/Children Aboard:</label>
+                <input type="number" id="parch" name="parch" min="0" max="10" required placeholder="Number of parents/children">
+            </div>
+
+            <div class="form-group">
+                <label for="fare">Fare Amount (£):</label>
+                <input type="number" id="fare" name="fare" min="0" step="0.01" required placeholder="Enter fare amount in pounds">
+            </div>
+
+            <div class="form-group">
+                <label for="embarked">Embarked From:</label>
+                <select id="embarked" name="embarked" required>
+                    <option value="" disabled selected>Select port</option>
+                    <option value="C">Cherbourg</option>
+                    <option value="Q">Queenstown</option>
+                    <option value="S">Southampton</option>
+                </select>
+            </div>
+
+            <button type="submit" aria-label="Predict survival probability">
+                Predict Survival
+            </button>
+        </form>
+    </div>
+</body>
+</html>

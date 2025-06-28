@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #e0f7fa, #80deea);
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 400px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #006064;
+            margin-bottom: 30px;
+        }
+
+        .circle-progress {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 30px;
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: #e0e0e0;
+            stroke-width: 10;
+        }
+
+        .circle-fill {
+            fill: none;
+            stroke: #2e7d32;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            stroke-dasharray: 565;
+            stroke-dashoffset: calc(565 - (565 * {{ probability|default(0) * 100 }} / 100));
+            transition: stroke-dashoffset 0.8s ease;
+        }
+
+        .circle-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 36px;
+            font-weight: bold;
+            color: #006064;
+        }
+
+        .survival-status {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .survived {
+            color: #2e7d32;
+        }
+
+        .not-survived {
+            color: #c62828;
+        }
+
+        .try-again {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            background-color: #006064;
+            color: white;
+            padding: 12px 25px;
+            margin-top: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .try-again:hover {
+            background-color: #004d40;
+        }
+
+        .try-again::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.2) 100%);
+            transform: skewX(-25deg);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -75%; }
+            100% { left: 125%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Prediction Result</h1>
+
+        <div class="circle-progress">
+            <svg viewBox="0 0 200 200">
+                <circle class="circle-bg" cx="100" cy="100" r="90"></circle>
+                <circle class="circle-fill" cx="100" cy="100" r="90"></circle>
+            </svg>
+            <div class="circle-text">{{ "%.0f"|format(probability|default(0) * 100) }}%</div>
+        </div>
+
+        <div class="survival-status {{ 'survived' if prediction == 'Survived' else 'not-survived' }}">
+            {{ prediction }}
+        </div>
+
+        <a href="/" class="try-again">Try Another Prediction</a>
+    </div>
+</body>
+</html>
